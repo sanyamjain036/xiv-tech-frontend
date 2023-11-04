@@ -42,21 +42,28 @@ function App() {
 
   const handleSubmit = async () => {
     if (locations.length == 0) return;
-    const parsedLocations = locations.map((location) => location.keyword);
 
-    const res = await fetch(`${URL}/getWeather`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ locations: parsedLocations }),
-    });
-    const resData = await res.json();
-    setData(
-      resData?.data?.map((item, i) => {
-        return { ...item, id: locations[i].id };
-      })
-    );
+    try {
+      const parsedLocations = locations.map((location) => location.keyword);
+
+      const res = await fetch(`${URL}/getWeather`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ locations: parsedLocations }),
+      });
+      const resData = await res.json();
+      setData(
+        resData?.data?.map((item, i) => {
+          return { ...item, id: locations[i].id };
+        })
+      );
+    } catch (err) {
+      alert("Invalid input!");
+      setData([]);
+      setLocations([]);
+    }
   };
 
   return (
@@ -117,7 +124,6 @@ function App() {
                       feelTemp={item?.current?.feelslike_c}
                       condition={item?.current?.condition.text}
                       icon={item?.current?.condition?.icon}
-                      error={item?.error}
                     />
                   );
                 })
