@@ -54,12 +54,18 @@ function App() {
         body: JSON.stringify({ locations: parsedLocations }),
       });
       const resData = await res.json();
+
+      if (resData.hasOwnProperty("error")) {
+        throw new Error("Invalid! Input");
+      }
+
       setData(
         resData?.data?.map((item, i) => {
           return { ...item, id: locations[i].id };
         })
       );
     } catch (err) {
+      console.log(err);
       alert("Invalid input!");
       setData([]);
       setLocations([]);
