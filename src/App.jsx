@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Box from "./components/Box";
 import Card from "./components/Card";
+import { toast, ToastContainer } from "react-toastify";
 
 // const URL = "http://localhost:8080";
 const URL = "https://xiv-tech-backend.onrender.com";
@@ -10,6 +11,7 @@ function App() {
   const [keyword, setKeyword] = useState("");
   const [locations, setLocations] = useState([]);
   const [data, setData] = useState([]);
+  const toastId = useRef(null);
 
   const handleInputChange = (event) => {
     setKeyword(event.target.value);
@@ -44,6 +46,8 @@ function App() {
     if (locations.length == 0) return;
 
     try {
+      toastId.current = toast("Loading...");
+
       const parsedLocations = locations.map((location) => location.keyword);
 
       const res = await fetch(`${URL}/getWeather`, {
@@ -69,11 +73,14 @@ function App() {
       alert("Invalid input!");
       setData([]);
       setLocations([]);
+    } finally {
+      toast.dismiss(toastId.current);
     }
   };
 
   return (
     <>
+      <ToastContainer />
       <div className="px-5 font-mono max-w-[1000px] mx-auto md-px-0">
         <header className=" text-3xl text-center p-4 pb-8">
           What's Weather Today?
